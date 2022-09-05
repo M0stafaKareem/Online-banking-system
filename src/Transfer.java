@@ -1,5 +1,8 @@
 
 import java.awt.Color;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /*
@@ -15,10 +18,24 @@ public class Transfer extends javax.swing.JFrame {
 
     /**
      * Creates new form Transfer
+     * @param caller
+     * @param username
+     * @param card
+     * @throws java.io.FileNotFoundException
      */
-    public Transfer(JFrame caller) {
+    public Transfer(JFrame caller,String username, CreditCard card) throws FileNotFoundException {
         initComponents();
         calingParent = caller ;
+        this.clientUserName = username ;
+        this.clientCard = card ;
+        this.clientBankAccount = new BankAccount(clientUserName);
+        availableBalance.setText(clientBankAccount.getAvailableBalance());
+        ExpiryDate.setText(clientCard.getCardExpiry());
+        senderCardNumber.setText(clientCard.getCardNumber().substring(14));
+    }
+
+    private Transfer() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -31,10 +48,10 @@ public class Transfer extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        balanceLabel = new javax.swing.JLabel();
+        availableBalance = new javax.swing.JLabel();
         senderCardNumber = new javax.swing.JLabel();
-        senderExpiryDate = new javax.swing.JLabel();
-        cardNumberTextfield = new javax.swing.JTextField();
+        ExpiryDate = new javax.swing.JLabel();
+        recieverCardNumber = new javax.swing.JTextField();
         background = new javax.swing.JLabel();
         addButton = new javax.swing.JButton();
         fav1Button = new javax.swing.JButton();
@@ -56,11 +73,11 @@ public class Transfer extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(375, 812));
         jPanel1.setLayout(null);
 
-        balanceLabel.setFont(new java.awt.Font("Nexa Regular", 0, 24)); // NOI18N
-        balanceLabel.setForeground(new java.awt.Color(255, 255, 255));
-        balanceLabel.setText("$5,000");
-        jPanel1.add(balanceLabel);
-        balanceLabel.setBounds(55, 290, 130, 40);
+        availableBalance.setFont(new java.awt.Font("Nexa Regular", 0, 24)); // NOI18N
+        availableBalance.setForeground(new java.awt.Color(255, 255, 255));
+        availableBalance.setText("$5,000");
+        jPanel1.add(availableBalance);
+        availableBalance.setBounds(55, 290, 130, 40);
 
         senderCardNumber.setFont(new java.awt.Font("Nexa Regular", 0, 15)); // NOI18N
         senderCardNumber.setForeground(new java.awt.Color(255, 255, 255));
@@ -68,24 +85,24 @@ public class Transfer extends javax.swing.JFrame {
         jPanel1.add(senderCardNumber);
         senderCardNumber.setBounds(234, 342, 41, 21);
 
-        senderExpiryDate.setFont(new java.awt.Font("Nexa Black", 0, 14)); // NOI18N
-        senderExpiryDate.setForeground(new java.awt.Color(255, 255, 255));
-        senderExpiryDate.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        senderExpiryDate.setText("08/24");
-        jPanel1.add(senderExpiryDate);
-        senderExpiryDate.setBounds(258, 276, 60, 14);
+        ExpiryDate.setFont(new java.awt.Font("Nexa Black", 0, 14)); // NOI18N
+        ExpiryDate.setForeground(new java.awt.Color(255, 255, 255));
+        ExpiryDate.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ExpiryDate.setText("08/24");
+        jPanel1.add(ExpiryDate);
+        ExpiryDate.setBounds(258, 276, 60, 14);
 
-        cardNumberTextfield.setFont(new java.awt.Font("Nexa Regular", 0, 17)); // NOI18N
-        cardNumberTextfield.setForeground(new java.awt.Color(204, 204, 204));
-        cardNumberTextfield.setText("Type here");
-        cardNumberTextfield.setBorder(null);
-        cardNumberTextfield.addFocusListener(new java.awt.event.FocusAdapter() {
+        recieverCardNumber.setFont(new java.awt.Font("Nexa Regular", 0, 17)); // NOI18N
+        recieverCardNumber.setForeground(new java.awt.Color(204, 204, 204));
+        recieverCardNumber.setText("Type here");
+        recieverCardNumber.setBorder(null);
+        recieverCardNumber.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                cardNumberTextfieldFocusGained(evt);
+                recieverCardNumberFocusGained(evt);
             }
         });
-        jPanel1.add(cardNumberTextfield);
-        cardNumberTextfield.setBounds(64, 556, 200, 23);
+        jPanel1.add(recieverCardNumber);
+        recieverCardNumber.setBounds(64, 556, 200, 23);
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Elements/Transfer.png"))); // NOI18N
         jPanel1.add(background);
@@ -200,9 +217,13 @@ public class Transfer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void creditCardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditCardButtonActionPerformed
-        Cards c1 = new Cards(this) ;
-        c1.show();
-        this.dispose();
+        try {
+            Cards c1 = new Cards(this, clientUserName) ;
+            c1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Transfer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_creditCardButtonActionPerformed
 
     private void currencyConverterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currencyConverterButtonActionPerformed
@@ -217,15 +238,19 @@ public class Transfer extends javax.swing.JFrame {
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
-        Dashboard d1 = new Dashboard();
-        d1.show();
-        this.dispose();
+        try {
+            Dashboard d1 = new Dashboard(clientUserName);
+            d1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Transfer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_homeButtonActionPerformed
 
-    private void cardNumberTextfieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cardNumberTextfieldFocusGained
-        cardNumberTextfield.setText("");
-        cardNumberTextfield.setForeground(Color.BLACK);
-    }//GEN-LAST:event_cardNumberTextfieldFocusGained
+    private void recieverCardNumberFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_recieverCardNumberFocusGained
+        recieverCardNumber.setText("");
+        recieverCardNumber.setForeground(Color.BLACK);
+    }//GEN-LAST:event_recieverCardNumberFocusGained
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         TransferConfirmation t1 = new TransferConfirmation();
@@ -263,18 +288,20 @@ public class Transfer extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Transfer(null).setVisible(true);
+                new Transfer().setVisible(true);
             }
         });
     }
-
+    private CreditCard clientCard ;
+    private final String clientUserName;
+    private final BankAccount clientBankAccount ;
     private final JFrame calingParent;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ExpiryDate;
     private javax.swing.JButton addButton;
+    private javax.swing.JLabel availableBalance;
     private javax.swing.JButton backButton;
     private javax.swing.JLabel background;
-    private javax.swing.JLabel balanceLabel;
-    private javax.swing.JTextField cardNumberTextfield;
     private javax.swing.JButton creditCardButton;
     private javax.swing.JButton currencyConverterButton;
     private javax.swing.JButton fav1Button;
@@ -283,9 +310,9 @@ public class Transfer extends javax.swing.JFrame {
     private javax.swing.JButton fav4Button;
     private javax.swing.JButton homeButton;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField recieverCardNumber;
     private javax.swing.JButton sendButton;
     private javax.swing.JLabel senderCardNumber;
-    private javax.swing.JLabel senderExpiryDate;
     private javax.swing.JButton trackerButton;
     // End of variables declaration//GEN-END:variables
 }

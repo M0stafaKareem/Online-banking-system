@@ -1,0 +1,15 @@
+User ID :Shaheen
+Password :123456789
+Customer ID :E100
+Available balance :56000
+Safe deposit :10523
+Cashback :500
+Today net transactions :-$100
+Last week net transactions :-$1500
+Last month net transactions :-$15000
+Number of Cards :1
+Card number :5568 2245 9865 3742
+Card expiry :08/25
+Card limit :$80000 of $100000
+Limit percentage: 80%
+Card pin :1478

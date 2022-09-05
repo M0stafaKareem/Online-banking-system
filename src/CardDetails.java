@@ -1,3 +1,8 @@
+
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -11,9 +16,22 @@ public class CardDetails extends javax.swing.JFrame {
 
     /**
      * Creates new form CardDetails
+     * @param username
+     * @param card
      */
-    public CardDetails() {
+    public CardDetails(String username, CreditCard card) throws FileNotFoundException {
         initComponents();
+        this.clientUserName = username ;
+        this.clientCard = card ;
+        this.clientBankAccount = new BankAccount(clientUserName);
+        availableBalance.setText(clientBankAccount.getAvailableBalance());
+        cardNumber.setText(clientCard.getCardNumber());
+        expiryDate.setText(clientCard.getCardExpiry());
+        
+    }
+
+    private CardDetails() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -59,7 +77,7 @@ public class CardDetails extends javax.swing.JFrame {
         expiryDate.setForeground(new java.awt.Color(255, 255, 255));
         expiryDate.setText("12/24");
         jPanel1.add(expiryDate);
-        expiryDate.setBounds(30, 312, 50, 35);
+        expiryDate.setBounds(30, 312, 80, 35);
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Elements/Cards (1).png"))); // NOI18N
         jPanel1.add(background);
@@ -109,9 +127,13 @@ public class CardDetails extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        Cards c1 = new Cards(new Dashboard());
-        c1.show();
-        this.dispose();
+        try {
+            Cards c1 = new Cards(new Dashboard(clientUserName), clientUserName);
+            c1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(CardDetails.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_backButtonActionPerformed
 
     /**
@@ -149,6 +171,9 @@ public class CardDetails extends javax.swing.JFrame {
         });
     }
 
+    private CreditCard clientCard ;
+    private final String clientUserName;
+    private final BankAccount clientBankAccount ;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel availableBalance;
     private javax.swing.JButton backButton;

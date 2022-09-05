@@ -1,3 +1,5 @@
+
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -5,7 +7,6 @@ import java.util.logging.Logger;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author mostafa
@@ -120,17 +121,26 @@ public class Login extends javax.swing.JFrame {
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         try {
-            Dashboard D1 = new Dashboard();
+            if (!Authentication.validate(usernameField.getText(), PasswordField.getText())) {
+                usernameField.setText("");
+                PasswordField.setText("");
+                PasswordField.grabFocus();
+                usernameField.grabFocus();
+                return;
+            }
+            Dashboard D1 = new Dashboard(usernameField.getText());
             D1.show();
             this.dispose();
-        } catch (Exception ex) {
+
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void usernameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usernameFieldFocusGained
-        if(usernameField.getText().equals("") ){
-        usernameLabel.hide();
+        if (usernameField.getText().equals("")) {
+            usernameLabel.hide();
         }
     }//GEN-LAST:event_usernameFieldFocusGained
 
@@ -139,12 +149,12 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_PasswordFieldFocusGained
 
     private void PasswordFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_PasswordFieldFocusLost
-        if(PasswordField.getText().equals(""))
+        if (PasswordField.getText().equals(""))
             passwordLabel.show();
     }//GEN-LAST:event_PasswordFieldFocusLost
 
     private void usernameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usernameFieldFocusLost
-        if(usernameField.getText().equals(""))
+        if (usernameField.getText().equals(""))
             usernameLabel.show();
     }//GEN-LAST:event_usernameFieldFocusLost
 

@@ -1,4 +1,7 @@
 
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /*
@@ -15,10 +18,22 @@ public class Cards extends javax.swing.JFrame {
     /**
      * Creates new form Cards
      * @param caller
+     * @param username
      */
-    public Cards(JFrame caller) {
+    public Cards(JFrame caller, String username) throws FileNotFoundException {
         initComponents();
+        this.clientUserName = username ;
         calingParent = caller ;
+        
+        clientCard = new CreditCard(this.clientUserName) ;
+        
+        expDate.setText(clientCard.getCardExpiry());
+        creditLimit.setText(clientCard.getCardLimit());
+        cardNumber.setText("* * * *" + clientCard.getCardNumber().substring(14) );
+    }
+
+    private Cards() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -169,9 +184,13 @@ public class Cards extends javax.swing.JFrame {
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void fundTransferButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fundTransferButtonActionPerformed
-        Transfer t1 = new Transfer(this) ;
-        t1.show();
-        this.dispose();
+        try {
+            Transfer t1 = new Transfer(this, clientUserName, clientCard) ;
+            t1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Cards.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_fundTransferButtonActionPerformed
 
     private void currencyConverterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currencyConverterButtonActionPerformed
@@ -181,15 +200,23 @@ public class Cards extends javax.swing.JFrame {
     }//GEN-LAST:event_currencyConverterButtonActionPerformed
 
     private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
-        Dashboard d1 = new Dashboard();
-        d1.show();
-        this.dispose();
+        try {
+            Dashboard d1 = new Dashboard(this.clientUserName);
+            d1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Cards.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_homeButtonActionPerformed
 
     private void CardDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardDetailsActionPerformed
-        CardDetails c1 = new CardDetails();
-        c1.show();
-        this.dispose();
+        try {
+            CardDetails c1 = new CardDetails(clientUserName,clientCard);
+            c1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Cards.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_CardDetailsActionPerformed
 
     /**
@@ -222,11 +249,13 @@ public class Cards extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Cards(null).setVisible(true);
+                new Cards().setVisible(true);
             }
         });
     }
 
+    private CreditCard clientCard ;
+    private final String clientUserName;
     private final JFrame calingParent;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CardDetails;

@@ -1,4 +1,5 @@
 
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,10 +16,19 @@ public class Dashboard extends javax.swing.JFrame {
 
     /**
      * Creates new form Dashboard
+     * @param username
+     * @throws java.io.FileNotFoundException
      */
-    public Dashboard() {
+    public Dashboard(String username) throws FileNotFoundException {
         initComponents();
-        
+        this.clientUserName = username ;
+        clientCard = new CreditCard(username);
+        clientBankAccount = new BankAccount(clientUserName) ;
+        clientName.setText("Hello, ".concat(clientUserName) );
+        availableBalance.setText( "$" + String.valueOf( clientBankAccount.getAvailableBalance()) );
+        cashback.setText("$" + clientBankAccount.getCashback());
+        deposit.setText("$" + clientBankAccount.getSafeDeposit());
+        creditCard.setText(clientCard.getCardNumber().substring(14));
     }
 
     /**
@@ -33,7 +43,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         clientName = new javax.swing.JLabel();
         availableBalance = new javax.swing.JLabel();
-        cardNo4 = new javax.swing.JLabel();
+        creditCard = new javax.swing.JLabel();
         cashback = new javax.swing.JLabel();
         deposit = new javax.swing.JLabel();
         netTransactionsLabel = new javax.swing.JLabel();
@@ -67,12 +77,11 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel1.add(availableBalance);
         availableBalance.setBounds(50, 340, 184, 40);
 
-        cardNo4.setFont(new java.awt.Font("Nexa Black", 0, 20)); // NOI18N
-        cardNo4.setForeground(new java.awt.Color(102, 102, 102));
-        cardNo4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        cardNo4.setText("2077");
-        jPanel1.add(cardNo4);
-        cardNo4.setBounds(255, 419, 53, 33);
+        creditCard.setFont(new java.awt.Font("Nexa Black", 0, 20)); // NOI18N
+        creditCard.setForeground(new java.awt.Color(102, 102, 102));
+        creditCard.setText("2077");
+        jPanel1.add(creditCard);
+        creditCard.setBounds(255, 419, 80, 33);
 
         cashback.setFont(new java.awt.Font("Nexa Black", 0, 20)); // NOI18N
         cashback.setText("$220.54");
@@ -90,9 +99,10 @@ public class Dashboard extends javax.swing.JFrame {
         netTransactionsLabel.setBounds(31, 688, 150, 30);
 
         netValue.setFont(new java.awt.Font("Nexa Regular", 0, 16)); // NOI18N
-        netValue.setText("-$20.00");
+        netValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        netValue.setText("$0");
         jPanel1.add(netValue);
-        netValue.setBounds(260, 688, 67, 24);
+        netValue.setBounds(240, 688, 120, 24);
 
         day.setFont(new java.awt.Font("Nexa Book", 0, 18)); // NOI18N
         day.setForeground(new java.awt.Color(51, 0, 153));
@@ -171,25 +181,44 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void setLabel(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_setLabel
         if( jComboBox1.getSelectedIndex() != 3)
-        day.setText((String)jComboBox1.getSelectedItem());
+            day.setText((String)jComboBox1.getSelectedItem());
+        switch( jComboBox1.getSelectedIndex() ){
+            case 0:
+                netValue.setText(clientBankAccount.getTodayNetTransactions());
+                break;
+             case 1:
+                netValue.setText(clientBankAccount.getWeekNetTransactions());
+                break;
+             case 2:
+                netValue.setText(clientBankAccount.getMonthNetTransactions());
+                break;
+        }
     }//GEN-LAST:event_setLabel
 
     private void sideMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sideMenuActionPerformed
-       DropdownMenu s1 = new DropdownMenu(this) ;
+       DropdownMenu s1 = new DropdownMenu(this,clientUserName) ;
        s1.show();
        this.dispose();
     }//GEN-LAST:event_sideMenuActionPerformed
 
     private void creditCardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditCardButtonActionPerformed
-        Cards c1 = new Cards(this) ;
-        c1.show();
-        this.dispose();
+        try {
+            Cards c1 = new Cards(this,this.clientUserName) ;
+            c1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_creditCardButtonActionPerformed
 
     private void fundTransferButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fundTransferButtonActionPerformed
-        Transfer t1 = new Transfer(this) ;
-        t1.show();
-        this.dispose();
+        try {
+            Transfer t1 = new Transfer(this, clientUserName, clientCard) ;
+            t1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_fundTransferButtonActionPerformed
 
     private void currencyConverterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currencyConverterButtonActionPerformed
@@ -229,7 +258,7 @@ public class Dashboard extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new Dashboard().setVisible(true);
+                    new Dashboard(null).setVisible(true);
                 } catch (Exception ex) {
                     Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -237,12 +266,15 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
 
+    private CreditCard clientCard ;
+    private final String clientUserName;
+    private final BankAccount clientBankAccount ;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel availableBalance;
     private javax.swing.JLabel background;
-    private javax.swing.JLabel cardNo4;
     private javax.swing.JLabel cashback;
     private javax.swing.JLabel clientName;
+    private javax.swing.JLabel creditCard;
     private javax.swing.JButton creditCardButton;
     private javax.swing.JButton currencyConverterButton;
     private javax.swing.JLabel day;

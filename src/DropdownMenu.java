@@ -1,4 +1,7 @@
 
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /*
@@ -17,9 +20,19 @@ public class DropdownMenu extends javax.swing.JFrame {
     /**
      * Creates new form sideMenu
      * @param calingParent
+     * @param username
+     * @throws java.io.FileNotFoundException
      */
-    public DropdownMenu(JFrame calingParent) {
+    public DropdownMenu(JFrame calingParent,String username) throws FileNotFoundException {
         initComponents();
+        this.clientUserName = username ;
+        this.clientBankAccount = new BankAccount(username) ;
+        customerID.setText(clientBankAccount.getClientAccountID());
+        customerName.setText(username);
+    }
+
+    private DropdownMenu() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -119,9 +132,13 @@ public class DropdownMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
-        Dashboard d1 = new Dashboard() ;
-        d1.show();
-        this.dispose();
+        try {
+            Dashboard d1 = new Dashboard(clientUserName) ;
+            d1.show();
+            this.dispose();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DropdownMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
@@ -161,11 +178,13 @@ public class DropdownMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DropdownMenu(null).setVisible(true);
+                new DropdownMenu().setVisible(true);
             }
         });
     }
-
+    
+    private final BankAccount clientBankAccount ;
+    private final String clientUserName;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton SupportButton;
     private javax.swing.JButton backButton;
